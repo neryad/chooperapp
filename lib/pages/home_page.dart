@@ -5,8 +5,24 @@ import 'package:chooperapp/services/post_service.dart';
 import 'package:flutter/material.dart';
 import 'package:chopper/chopper.dart';
 import 'package:provider/provider.dart';
+import 'package:chooperapp/utils/utils.dart' as utils;
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+final _formKey = GlobalKey<FormState>();
+
+final titleController = TextEditingController();
+
+final bodyController = TextEditingController();
+
+class _HomePageState extends State<HomePage> {
+  // final formKey = GlobalKey<FormState>();
+
+  // Post postModel = new Post();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,12 +32,12 @@ class HomePage extends StatelessWidget {
       body: _buildBody(context),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: () async {
-          final txtBody = 'asd';
-          final response =
-              await Provider.of<PostService>(context, listen: false)
-                  .postPost({'key': txtBody});
-          print(response.body);
+        onPressed: () {
+          _postAlert(context);
+          // final response =
+          //     await Provider.of<PostService>(context, listen: false)
+          //         .postPost({'key': 'value'});
+          // print(response.body);
         },
       ),
     );
@@ -60,6 +76,102 @@ class HomePage extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  void _postAlert(BuildContext context) {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Nuevo Post"),
+            content: Form(
+              key: _formKey,
+              child: SingleChildScrollView(
+                child: Container(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      _postTitle(),
+                      _postContent(),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            actions: <Widget>[
+              FlatButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(
+                    "Volver a la post",
+                    style: TextStyle(color: Colors.blue),
+                  )),
+              FlatButton(
+                  onPressed: () async {
+                    // _subimt();
+                    final response =
+                        await Provider.of<PostService>(context, listen: false)
+                            .postPost({'key': 'value'});
+                    print(response.body);
+                    Navigator.of(context).pop();
+                    utils.showSnack(
+                        context, 'Post : ${titleController.text}creado');
+                  },
+                  child: Text(
+                    "Guardar",
+                    style: TextStyle(color: Colors.blue),
+                  )),
+            ],
+          );
+        });
+  }
+
+  Widget _postTitle() {
+    return TextFormField(
+      maxLength: 33,
+      controller: titleController,
+      textCapitalization: TextCapitalization.sentences,
+      textAlign: TextAlign.center,
+      // onSaved: (value) => posttModel.title = value,
+      validator: (value) {
+        if (utils.isEmpty(value)) {
+          return null;
+        } else {
+          return "Llenar Campos";
+        }
+      },
+      decoration: InputDecoration(
+        labelText: "Titulo",
+        labelStyle: TextStyle(color: Colors.blue),
+        focusedBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.blue),
+        ),
+      ),
+    );
+  }
+
+  Widget _postContent() {
+    return TextFormField(
+      maxLength: 33,
+      controller: bodyController,
+      textCapitalization: TextCapitalization.sentences,
+      textAlign: TextAlign.center,
+      //onSaved: (value) => posttModel.body = value,
+      validator: (value) {
+        if (utils.isEmpty(value)) {
+          return null;
+        } else {
+          return "Llenar Campos";
+        }
+      },
+      decoration: InputDecoration(
+        labelText: "Contenido",
+        labelStyle: TextStyle(color: Colors.teal),
+        focusedBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.teal),
+        ),
+      ),
     );
   }
 
