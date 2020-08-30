@@ -1,5 +1,4 @@
 import 'package:chopper/chopper.dart';
-import 'package:chooperapp/config/api_config.dart' as conf;
 part 'post_service.chopper.dart';
 
 //final String ApiUrl = conf.CONFIG['API_URL'];
